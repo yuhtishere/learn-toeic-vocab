@@ -95,11 +95,13 @@ export const useVocabularyStore = defineStore('vocabulary', {
 
     /** Lấy lịch sử quiz của một ngày */
     getQuizHistory: (state) => (dayKey) => {
+      if (!state.quizHistory) return []
       return state.quizHistory[dayKey] || []
     },
 
     /** Lấy điểm cao nhất quiz của một ngày */
     bestQuizScore: (state) => (dayKey) => {
+      if (!state.quizHistory) return null
       const history = state.quizHistory[dayKey] || []
       if (!history.length) return null
       return history.reduce((best, h) => h.score > best.score ? h : best, history[0])
@@ -154,6 +156,9 @@ export const useVocabularyStore = defineStore('vocabulary', {
 
     /** Lưu kết quả quiz */
     saveQuizResult(dayKey, { correct, wrong, total }) {
+      if (!this.quizHistory) {
+        this.quizHistory = {}
+      }
       if (!this.quizHistory[dayKey]) {
         this.quizHistory[dayKey] = []
       }

@@ -63,8 +63,36 @@
       </div>
     </transition>
 
+    <!-- Setup screen -->
+    <transition name="fade">
+      <div v-if="quizState === 'setup'" class="quiz-setup">
+        <div class="quiz-setup__card container">
+          <h2 class="quiz-setup__title">Tùy chỉnh Quiz</h2>
+          <p class="quiz-setup__sub">{{ formattedDayLabel }}</p>
+
+          <div class="quiz-setup__options">
+            <span class="quiz-setup__label">Số lượng câu hỏi:</span>
+            <el-radio-group v-model="selectedCount" class="quiz-setup__group">
+              <el-radio-button :value="10">10 câu</el-radio-button>
+              <el-radio-button :value="20">20 câu</el-radio-button>
+              <el-radio-button :value="30">30 câu</el-radio-button>
+              <el-radio-button :value="'all'">Tất cả</el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div class="quiz-setup__actions">
+            <el-button type="primary" size="large" @click="startQuiz" id="btn-quiz-start" class="quiz-setup__start">
+              Bắt đầu Quiz
+              <el-icon class="el-icon--right"><VideoPlay /></el-icon>
+            </el-button>
+            <el-button size="large" @click="goBack" id="btn-quiz-cancel">Hủy</el-button>
+          </div>
+        </div>
+      </div>
+    </transition>
+
     <!-- Quiz area -->
-    <div v-if="!isCompleted && currentWord" class="quiz-view__inner container">
+    <div v-if="quizState === 'playing' && currentWord" class="quiz-view__inner container">
       <!-- Topbar -->
       <div class="quiz-view__topbar">
         <router-link :to="backRoute" class="quiz-view__back" id="quiz-back-btn">
@@ -148,6 +176,9 @@ const backRoute = computed(() => ({ name: 'day', params: { dayKey: dayKey.value 
 function goBack() { router.push(backRoute.value) }
 
 // State
+const quizState = ref('setup') // 'setup' | 'playing' | 'completed'
+const selectedCount = ref(20)
+
 const deck = ref([])
 const deckReady = ref(false)
 const currentIndex = ref(0)
@@ -167,7 +198,7 @@ const fireworkBursts = [
 ]
 
 const currentWord = computed(() => deck.value[currentIndex.value] || null)
-const isCompleted = computed(() => deckReady.value && currentIndex.value >= deck.value.length)
+const isCompleted = computed(() => quizState.value === 'completed')
 const progressPercent = computed(() =>
   deck.value.length ? Math.round((currentIndex.value / deck.value.length) * 100) : 0
 )
@@ -211,21 +242,31 @@ const allWords = computed(() => {
 function loadDeck() {
   if (route.name !== 'quiz') return
   deckReady.value = false
+  quizState.value = 'setup'
   currentIndex.value = 0
   correctCount.value = 0
   wrongCount.value = 0
   selected.value = null
   answered.value = false
+  savedThisRound.value = false
+}
 
+function startQuiz() {
   const words = store.getWordsByDay(dayKey.value)
   if (!words.length) return
 
   // Shuffle deck, only pick words that have actual word text
-  deck.value = [...words]
+  let fullDeck = [...words]
     .filter(w => w.word && w.word.trim())
     .sort(() => Math.random() - 0.5)
 
+  if (selectedCount.value !== 'all') {
+    fullDeck = fullDeck.slice(0, selectedCount.value)
+  }
+
+  deck.value = fullDeck
   deckReady.value = true
+  quizState.value = 'playing'
   generateOptions()
 }
 
@@ -325,21 +366,15 @@ function nextWord() {
   currentIndex.value++
   selected.value = null
   answered.value = false
-  if (!isCompleted.value) generateOptions()
+  if (currentIndex.value >= deck.value.length) {
+    quizState.value = 'completed'
+  } else {
+    generateOptions()
+  }
 }
 
 function restartAll() {
-  const words = store.getWordsByDay(dayKey.value)
-  deck.value = [...words]
-    .filter(w => w.word && w.word.trim())
-    .sort(() => Math.random() - 0.5)
-  currentIndex.value = 0
-  correctCount.value = 0
-  wrongCount.value = 0
-  selected.value = null
-  answered.value = false
-  savedThisRound.value = false
-  generateOptions()
+  quizState.value = 'setup'
 }
 
 function triggerFireworks() {
@@ -561,6 +596,51 @@ onUnmounted(() => {
 .quiz-card__next {
   display: flex; justify-content: center; padding-top: $space-2;
   .el-button { min-width: 200px; }
+}
+// Setup screen
+.quiz-setup {
+  position: relative; z-index: 1;
+  min-height: calc(100vh - #{$header-height});
+  display: flex; align-items: center; justify-content: center;
+  padding: $space-6 0;
+}
+
+.quiz-setup__card {
+  max-width: 480px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: $space-5; padding: $space-10 $space-6; text-align: center;
+  background: $color-card; border: 1px solid $color-border;
+  border-radius: $radius-md; box-shadow: $shadow-lg;
+}
+
+.quiz-setup__title {
+  margin: 0; color: $color-text-primary;
+  font-size: $font-size-2xl; font-weight: $font-weight-extrabold;
+}
+
+.quiz-setup__sub { margin: 0; color: $color-primary; }
+
+.quiz-setup__options {
+  width: 100%; display: flex; flex-direction: column; gap: $space-3;
+  text-align: left;
+  margin: $space-4 0;
+}
+
+.quiz-setup__label {
+  color: $color-text-secondary; font-weight: $font-weight-medium;
+}
+
+.quiz-setup__group {
+  display: flex; flex-wrap: wrap; gap: $space-2;
+}
+
+.quiz-setup__actions {
+  width: 100%; display: flex; flex-direction: column; gap: $space-3;
+  .el-button { width: 100%; margin: 0; }
+}
+
+.quiz-setup__start {
+  font-size: $font-size-lg; font-weight: $font-weight-bold;
 }
 
 // Completion screen

@@ -197,7 +197,16 @@ const progressPercent = computed(() =>
 )
 const hintText = computed(() => {
   const word = currentWord.value?.word?.trim() || ''
-  return Array.from(word).slice(0, 2).join('')
+  if (!word) return ''
+  
+  return word.split(' ').map(w => {
+    const chars = Array.from(w)
+    if (chars.length <= 2) return chars.join(' ')
+    const first = chars[0]
+    const last = chars[chars.length - 1]
+    const middle = Array(chars.length - 2).fill('_').join(' ')
+    return `${first} ${middle} ${last}`
+  }).join('   ')
 })
 
 function initDeck(wordsToUse) {
