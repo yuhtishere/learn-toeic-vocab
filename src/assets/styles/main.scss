@@ -1,0 +1,223 @@
+// ============================================================
+// Global Styles — TOEIC Vocab App
+// ============================================================
+@use "variables" as *;
+
+// --- Reset & Base ---
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-regular;
+  color: $color-text-primary;
+  background-color: $color-bg;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// --- Typography ---
+h1, h2, h3, h4, h5, h6 {
+  font-weight: $font-weight-bold;
+  line-height: 1.3;
+  color: $color-text-primary;
+}
+
+p {
+  color: $color-text-secondary;
+  line-height: 1.7;
+}
+
+a {
+  color: $color-primary;
+  text-decoration: none;
+  transition: $transition-fast;
+
+  &:hover { opacity: 0.85; }
+}
+
+// --- Scrollbar (Webkit) ---
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: $color-surface;
+}
+::-webkit-scrollbar-thumb {
+  background: $color-border;
+  border-radius: $radius-full;
+  &:hover { background: $color-text-muted; }
+}
+
+// --- Element Plus Overrides ---
+:root {
+  --el-color-primary: #{$color-primary};
+  --el-color-primary-dark-2: #{$color-primary-dim};
+  --el-bg-color: #{$color-surface};
+  --el-bg-color-page: #{$color-bg};
+  --el-border-color: #{$color-border};
+  --el-border-color-light: #{$color-border-subtle};
+  --el-text-color-primary: #{$color-text-primary};
+  --el-text-color-regular: #{$color-text-secondary};
+  --el-fill-color-blank: #{$color-card};
+  --el-fill-color: #{$color-card-hover};
+  --el-mask-color: rgba(0, 0, 0, 0.7);
+  --el-border-radius-base: #{$radius-md};
+  --el-border-radius-large: #{$radius-lg};
+}
+
+// --- Layout Utilities ---
+.container {
+  max-width: $max-content-width;
+  margin: 0 auto;
+  padding: 0 $space-4;
+
+  @media (min-width: $bp-md) {
+    padding: 0 $space-6;
+  }
+}
+
+.main-content {
+  flex: 1;
+  padding-top: $header-height;
+  padding-bottom: calc(#{$bottom-nav-height} + #{$space-6});
+
+  @media (min-width: $bp-md) {
+    padding-bottom: $space-8;
+  }
+}
+
+// --- Animations ---
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.08); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.slide-left-enter-active,
+.slide-left-leave-active {
+  transition: all 0.3s ease;
+}
+.slide-left-enter-from { opacity: 0; transform: translateX(20px); }
+.slide-left-leave-to   { opacity: 0; transform: translateX(-20px); }
+
+// --- Skeleton loading ---
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    $color-card 25%,
+    $color-card-hover 50%,
+    $color-card 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: $radius-md;
+}
+
+// --- Utility ---
+.text-primary   { color: $color-text-primary !important; }
+.text-secondary { color: $color-text-secondary !important; }
+.text-muted     { color: $color-text-muted !important; }
+.text-success   { color: $color-success !important; }
+.text-danger    { color: $color-danger !important; }
+.text-gold      { color: $color-gold !important; }
+.text-blue      { color: $color-primary !important; }
+
+.font-bold    { font-weight: $font-weight-bold; }
+.font-medium  { font-weight: $font-weight-medium; }
+.font-semibold{ font-weight: $font-weight-semibold; }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// --- Badge ---
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-1 $space-2;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  line-height: 1;
+
+  &--blue    { background: rgba($color-primary, 0.15); color: $color-primary; }
+  &--green   { background: rgba($color-success, 0.15); color: $color-success; }
+  &--red     { background: rgba($color-danger, 0.15);  color: $color-danger; }
+  &--gold    { background: rgba($color-gold, 0.15);    color: $color-gold; }
+  &--muted   { background: $color-card; color: $color-text-secondary; }
+}
+
+// --- Empty State ---
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-4;
+  padding: $space-16 $space-6;
+  text-align: center;
+
+  &__icon {
+    font-size: 3.5rem;
+    opacity: 0.3;
+  }
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+  }
+
+  &__desc {
+    font-size: $font-size-sm;
+    color: $color-text-muted;
+    max-width: 280px;
+  }
+}
