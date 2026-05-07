@@ -60,6 +60,10 @@
           <el-button type="warning" id="day-quiz-btn" @click="goToQuiz">
             Làm Quiz
           </el-button>
+
+          <el-button id="day-quiz-results-btn" @click="goToQuizResults">
+            Kết quả
+          </el-button>
         </div>
       </div>
 
@@ -194,6 +198,10 @@ function goToFlashcard() {
 
 function goToQuiz() {
   router.push({ name: 'quiz', params: { dayKey: dayKey.value } })
+}
+
+function goToQuizResults() {
+  router.push({ name: 'quiz-results' })
 }
 
 // Reset progress với xác nhận

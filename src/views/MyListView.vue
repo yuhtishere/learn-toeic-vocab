@@ -116,10 +116,12 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useVocabularyStore } from '@/store/vocabulary'
+import { useAuthStore } from '@/store/auth'
 import { ElMessage } from 'element-plus'
 import WordCard from '@/components/common/WordCard.vue'
 
 const store = useVocabularyStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 // Lấy tất cả từ đã bookmark
@@ -155,10 +157,14 @@ const filteredGrouped = computed(() => {
     .map(([dayKey, words]) => ({ dayKey, words }))
 })
 
-// Xóa tất cả bookmark
-function clearAll() {
-  store.bookmarkedIds.splice(0)
-  ElMessage.success('Đã xóa tất cả từ đã lưu')
+// Xóa tất cả bookmark (gọi Supabase qua store action)
+async function clearAll() {
+  try {
+    await store.clearAllBookmarks(authStore.userId)
+    ElMessage.success('Đã xóa tất cả từ đã lưu')
+  } catch {
+    ElMessage.error('Xóa thất bại, vui lòng thử lại')
+  }
 }
 
 function goToFlashcardMyList() {

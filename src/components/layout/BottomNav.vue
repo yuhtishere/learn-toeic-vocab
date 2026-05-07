@@ -32,6 +32,7 @@ const store = useVocabularyStore()
 const bookmarkCount = computed(() => store.bookmarkedIds.length)
 
 const navItems = [
+  { name: 'results', to: { name: 'quiz-results' }, label: 'Kết quả', icon: 'DataAnalysis' },
   { name: 'home',   to: { name: 'home' },    label: 'Trang chủ', icon: 'House' },
   { name: 'mylist', to: { name: 'my-list' }, label: 'Của tôi',   icon: 'Star' },
 ]

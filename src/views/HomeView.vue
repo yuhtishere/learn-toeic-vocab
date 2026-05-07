@@ -12,8 +12,8 @@
           TOEIC Vocabulary Master
         </div>
         <h1 class="home-hero__title">
-          Học từ vựng<br />
-          <span class="home-hero__title-highlight">30 ngày chinh phục</span>
+          30 Ngày <br />
+          <span class="home-hero__title-highlight">Chinh Phục Từ Vựng</span>
         </h1>
         <p class="home-hero__desc">
           {{ totalWords }} từ vựng thiết yếu · Học theo lộ trình · Ôn luyện với Flashcard

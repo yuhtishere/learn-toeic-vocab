@@ -10,11 +10,12 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@supabase/supabase-js": "^2.105.3",
     "element-plus": "^2.7.3",
     "pinia": "^2.1.7",
-    "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "ws": "^8.20.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

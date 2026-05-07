@@ -38,13 +38,39 @@
         </button>
 
         <!-- Bookmark -->
-        <router-link :to="{ name: 'my-list' }" class="app-header__bookmark-btn" id="header-bookmark">
+        <router-link :to="{ name: 'my-list' }" class="app-header__bookmark-btn" id="header-bookmark" title="Từ đã lưu">
           <el-icon><Star /></el-icon>
           <span
             v-if="bookmarkCount > 0"
             class="app-header__bookmark-count"
           >{{ bookmarkCount }}</span>
         </router-link>
+
+        <!-- Auth User Menu -->
+        <div class="app-header__auth">
+          <template v-if="authStore.isLoggedIn">
+            <el-dropdown trigger="click">
+              <span class="el-dropdown-link app-header__user">
+                <el-icon class="app-header__user-icon"><UserFilled /></el-icon>
+                <span class="app-header__user-email">{{ authStore.userEmail.split('@')[0] }}</span>
+                <el-icon class="el-icon--right"><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item disabled>{{ authStore.userEmail }}</el-dropdown-item>
+                  <el-dropdown-item divided @click="handleLogout">
+                    <el-icon><SwitchButton /></el-icon> Đăng xuất
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </template>
+          <template v-else>
+            <router-link :to="{ name: 'auth' }" class="app-header__login-btn">
+              <el-icon><User /></el-icon> Đăng nhập
+            </router-link>
+          </template>
+        </div>
       </div>
 
     </div>
@@ -56,17 +82,29 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useVocabularyStore } from '@/store/vocabulary'
+import { useAuthStore } from '@/store/auth'
+import { ElMessage } from 'element-plus'
 import GlobalSearch from './GlobalSearch.vue'
 
 const store = useVocabularyStore()
+const authStore = useAuthStore()
+const router = useRouter()
 const showSearch = ref(false)
+
+async function handleLogout() {
+  await authStore.signOut()
+  ElMessage.success('Đã đăng xuất thành công')
+  router.push('/auth')
+}
 
 // Số từ đã bookmark
 const bookmarkCount = computed(() => store.bookmarkedIds.length)
 
 // Danh sách nav items
 const navItems = [
+  { name: 'results', to: { name: 'quiz-results' }, label: 'Kết quả', icon: 'DataAnalysis' },
   { name: 'home',    to: { name: 'home' },    label: 'Trang chủ', icon: 'House' },
   { name: 'mylist',  to: { name: 'my-list' }, label: 'Từ của tôi', icon: 'CollectionTag' },
 ]
@@ -240,6 +278,76 @@ const navItems = [
     align-items: center;
     justify-content: center;
     line-height: 1;
+  }
+
+  // --- Auth & User ---
+  &__auth {
+    display: flex;
+    align-items: center;
+    margin-left: $space-1;
+    padding-left: $space-2;
+    border-left: 1px solid $color-border;
+    
+    @media (min-width: $bp-sm) {
+      margin-left: $space-2;
+      padding-left: $space-3;
+    }
+  }
+
+  &__login-btn {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-1 $space-3;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    color: white;
+    background: linear-gradient(135deg, $color-primary, #7c3aed);
+    text-decoration: none;
+    transition: $transition-fast;
+    box-shadow: 0 4px 12px rgba($color-primary, 0.3);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba($color-primary, 0.4);
+      color: white;
+    }
+
+    @media (min-width: $bp-sm) {
+      padding: $space-2 $space-4;
+      gap: $space-2;
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    cursor: pointer;
+    padding: $space-1 $space-2;
+    border-radius: $radius-md;
+    transition: $transition-fast;
+    color: $color-text-primary;
+    
+    &:hover {
+      background: $color-card;
+    }
+  }
+  
+  &__user-icon {
+    font-size: 1.1rem;
+    color: $color-primary;
+  }
+
+  &__user-email {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    display: none; // Ẩn email trên mobile cho đỡ chật
+    
+    @media (min-width: $bp-sm) {
+      display: block;
+    }
   }
 }
 </style>

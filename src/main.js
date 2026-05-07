@@ -3,7 +3,6 @@
 // ============================================================
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import piniaPersistedState from 'pinia-plugin-persistedstate'
 
 // Element Plus
 import ElementPlus from 'element-plus'
@@ -22,9 +21,8 @@ import './assets/styles/main.scss'
 // Root component
 import App from './App.vue'
 
-// Khởi tạo Pinia với plugin persist
+// Khởi tạo Pinia (không dùng plugin persist — dữ liệu lưu trên Supabase)
 const pinia = createPinia()
-pinia.use(piniaPersistedState)
 
 const app = createApp(App)
 
