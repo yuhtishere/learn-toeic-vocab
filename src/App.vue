@@ -9,9 +9,7 @@
       <router-view />
     </main>
 
-    <footer class="app-footer">
-      Developed by Yuht
-    </footer>
+    <footer class="app-footer">Developed by Yuht</footer>
 
     <!-- Bottom navigation (chỉ hiện trên mobile) -->
     <BottomNav />
@@ -35,6 +33,7 @@ onMounted(async () => {
   if (authStore.isLoggedIn) {
     await vocabStore.fetchUserProgress(authStore.userId)
   }
+  console.log('App initialized.')
 })
 
 // Reactive: tự động load/clear khi login hoặc logout
